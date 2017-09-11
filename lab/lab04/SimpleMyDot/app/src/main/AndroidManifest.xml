@@ -19,7 +19,7 @@
         <activity android:name=".EditActivity"></activity>
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="kmitl.lab03.nakarin58070064.simplemydot.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:grantUriPermissions="true"
             android:exported="false">
             <meta-data

@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements Dots.OnDotsChange
 
         saveBitmapToCache(bitmap, 100, fileName);
         File file = new File(getCacheDir(), fileName);
-        sendFileIntent(file, "image/jpeg", "Share to");
+        sendFileIntent(file, "image/*", "Share to");
     }
 
     private Bitmap captureView(View view) {
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements Dots.OnDotsChange
 
     private void sendFileIntent(File file, String type, String message) {
         Uri contentUri = FileProvider.getUriForFile(getApplicationContext(),
-                "kmitl.lab03.nakarin58070064.simplemydot.fileprovider", file);
+                BuildConfig.APPLICATION_ID + ".fileprovider", file);
 
         if (contentUri == null)
             return;

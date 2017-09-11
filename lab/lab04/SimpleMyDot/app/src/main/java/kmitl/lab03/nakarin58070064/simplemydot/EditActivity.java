@@ -19,7 +19,7 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
-        setTitle("Edit Dot");
+        setTitle(getString(R.string.edit_dot_title));
 
         dot = getIntent().getParcelableExtra("Dot");
 

@@ -2,4 +2,9 @@
     <string name="app_name">SimpleMyDot</string>
     <string name="random_dot">Random Dot</string>
     <string name="clear_dot">Clear Dot</string>
+    <string name="edit_dot">Delete or Edit?</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit_dot_title">Edit Dot</string>
 </resources>

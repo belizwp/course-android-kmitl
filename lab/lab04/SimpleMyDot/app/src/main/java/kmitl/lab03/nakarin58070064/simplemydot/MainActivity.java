@@ -1,12 +1,11 @@
 package kmitl.lab03.nakarin58070064.simplemydot;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +13,7 @@ import android.view.View;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 
 import kmitl.lab03.nakarin58070064.simplemydot.model.Dot;
@@ -21,12 +21,14 @@ import kmitl.lab03.nakarin58070064.simplemydot.model.Dots;
 import kmitl.lab03.nakarin58070064.simplemydot.view.DotView;
 
 public class MainActivity extends AppCompatActivity implements Dots.OnDotsChangeListener,
-        DotView.DotViewTouchListener {
+        DotView.DotViewTouchListener, DotDialogFragment.OnDialogListener {
+
+    private static final String KEY_ALL_DOT = "allDot";
+
+    public static final int EDIT_DOT_REQUEST = 1;
 
     private Dots dots;
     private DotView dotView;
-
-    static final int EDIT_DOT_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,19 @@ public class MainActivity extends AppCompatActivity implements Dots.OnDotsChange
         setContentView(R.layout.activity_main);
 
         setup();
+
+        if (savedInstanceState != null) {
+            ArrayList<Dot> dotArrayList = savedInstanceState.getParcelableArrayList(KEY_ALL_DOT);
+            dots.setAllDot(dotArrayList);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelableArrayList(KEY_ALL_DOT,
+                (ArrayList<? extends Parcelable>) dots.getAllDot());
     }
 
     private void setup() {
@@ -42,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements Dots.OnDotsChange
 
         dotView = (DotView) findViewById(R.id.dotContainer);
         dotView.setListener(this);
-        dotView.setDrawingCacheEnabled(true);
     }
 
     public void onRandomDot(View view) {
@@ -67,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements Dots.OnDotsChange
 
         String fileName = "dotViewImg.png";
 
-        saveBitmapToCache(bitmap, fileName);
+        saveBitmapToCache(bitmap, 100, fileName);
         File file = new File(getCacheDir(), fileName);
         sendFileIntent(file, "image/jpeg", "Share to");
     }
@@ -79,11 +93,11 @@ public class MainActivity extends AppCompatActivity implements Dots.OnDotsChange
         return bitmap;
     }
 
-    private void saveBitmapToCache(Bitmap bitmap, String fileName) {
+    private void saveBitmapToCache(Bitmap bitmap, int quality, String fileName) {
         try {
             FileOutputStream stream = new FileOutputStream(getCacheDir() +
                     File.separator + fileName);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+            bitmap.compress(Bitmap.CompressFormat.PNG, quality, stream);
             stream.close();
 
         } catch (IOException e) {
@@ -94,6 +108,9 @@ public class MainActivity extends AppCompatActivity implements Dots.OnDotsChange
     private void sendFileIntent(File file, String type, String message) {
         Uri contentUri = FileProvider.getUriForFile(getApplicationContext(),
                 "kmitl.lab03.nakarin58070064.simplemydot.fileprovider", file);
+
+        if (contentUri == null)
+            return;
 
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
@@ -116,34 +133,26 @@ public class MainActivity extends AppCompatActivity implements Dots.OnDotsChange
             return;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Delete or Edit?");
-        builder.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                Intent intent = new Intent(MainActivity.this, EditActivity.class);
-                intent.putExtra("Dot", dots.getAllDot().get(dotIndex));
-                intent.putExtra("DotIndex", dotIndex);
-                startActivityForResult(intent, EDIT_DOT_REQUEST);
-            }
-        });
-        builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dots.remove(dotIndex);
-            }
-        });
-        builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        DotDialogFragment.newInstance(dotIndex).show(getSupportFragmentManager(), "Dialog");
     }
 
     @Override
     public boolean onDotViewTap(int x, int y) {
         dots.addDot(new Dot(x, y, 120, Color.RED));
         return true;
+    }
+
+    @Override
+    public void onEditPress(int dotIndex) {
+        Intent intent = new Intent(MainActivity.this, EditActivity.class);
+        intent.putExtra("Dot", dots.getAllDot().get(dotIndex));
+        intent.putExtra("DotIndex", dotIndex);
+        startActivityForResult(intent, EDIT_DOT_REQUEST);
+    }
+
+    @Override
+    public void onDeletePress(int dotIndex) {
+        dots.remove(dotIndex);
     }
 
     @Override

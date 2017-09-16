@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">SimpleMyDot</string>
+    <string name="random_dot">Random Dot</string>
+    <string name="clear_dot">Clear Dot</string>
+    <string name="edit_dot">Delete or Edit?</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit_dot_title">Edit Dot</string>
+
+    <string-array name="dot_dialog">
+        <item>Edit</item>
+        <item>Delete</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="save">Save</string>
+</resources>

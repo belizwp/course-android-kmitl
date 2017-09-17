@@ -82,12 +82,6 @@ public class DotFragment extends Fragment implements View.OnClickListener,
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        dotView.invalidate();
-    }
-
     private void initInstances(Bundle savedInstanceState) {
         dots = new Dots();
         dots.setListener(this);

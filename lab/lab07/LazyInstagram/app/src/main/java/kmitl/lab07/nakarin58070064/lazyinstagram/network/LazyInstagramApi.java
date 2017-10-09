@@ -1,8 +1,8 @@
-package kmitl.lab07.nakarin58070064.lazyinstagram.service;
+package kmitl.lab07.nakarin58070064.lazyinstagram.network;
 
-import kmitl.lab07.nakarin58070064.lazyinstagram.model.FollowRequest;
-import kmitl.lab07.nakarin58070064.lazyinstagram.model.FollowResponse;
-import kmitl.lab07.nakarin58070064.lazyinstagram.model.UserProfile;
+import kmitl.lab07.nakarin58070064.lazyinstagram.network.request.FollowRequest;
+import kmitl.lab07.nakarin58070064.lazyinstagram.network.response.FollowResponse;
+import kmitl.lab07.nakarin58070064.lazyinstagram.network.response.UserProfile;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;

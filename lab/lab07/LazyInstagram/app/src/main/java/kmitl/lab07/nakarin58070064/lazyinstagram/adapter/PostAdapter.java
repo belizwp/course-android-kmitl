@@ -2,6 +2,7 @@ package kmitl.lab07.nakarin58070064.lazyinstagram.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kmitl.lab07.nakarin58070064.lazyinstagram.R;
-import kmitl.lab07.nakarin58070064.lazyinstagram.model.PostModel;
+import kmitl.lab07.nakarin58070064.lazyinstagram.adapter.holder.GridItemHolder;
+import kmitl.lab07.nakarin58070064.lazyinstagram.adapter.holder.ListItemHolder;
+import kmitl.lab07.nakarin58070064.lazyinstagram.network.response.PostModel;
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
+public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int LIST_LAYOUT = 0;
     public static final int GRID_LAYOUT = 1;
@@ -35,25 +38,29 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
     }
 
     @Override
-    public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
 
         if (viewType == GRID_LAYOUT) {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.grid_item, null);
+            return new GridItemHolder(itemView);
         } else if (viewType == LIST_LAYOUT) {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, null);
+            return new ListItemHolder(itemView);
         } else {
             throw new NullPointerException("no support viewType");
         }
-
-        Holder holder = new Holder(itemView);
-        return holder;
     }
 
     @Override
-    public void onBindViewHolder(Holder holder, int position) {
-        String imageUrl = data.get(position).getUrl();
-        Glide.with(mContext).load(imageUrl).into(holder.imageView);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        PostModel post = data.get(position);
+
+        if (holder instanceof GridItemHolder) {
+            setupGridItem((GridItemHolder) holder, post);
+        } else if (holder instanceof ListItemHolder) {
+            setupListItem((ListItemHolder) holder, post);
+        }
     }
 
     @Override
@@ -70,13 +77,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
         this.itemLayout = itemLayout;
     }
 
-    static class Holder extends RecyclerView.ViewHolder {
-        ImageView imageView;
+    private void setupGridItem(GridItemHolder holder, PostModel postModel) {
+        Glide.with(mContext).load(postModel.getUrl()).into(holder.imageView);
+    }
 
-        public Holder(View itemView) {
-            super(itemView);
-            imageView = itemView.findViewById(R.id.imageView);
-        }
+    private void setupListItem(ListItemHolder holder, PostModel postModel) {
+        Glide.with(mContext).load(postModel.getUrl()).into(holder.imageView);
+        holder.like.setText(String.valueOf(postModel.getLike()));
+        holder.comment.setText(String.valueOf(postModel.getComment()));
     }
 
 }

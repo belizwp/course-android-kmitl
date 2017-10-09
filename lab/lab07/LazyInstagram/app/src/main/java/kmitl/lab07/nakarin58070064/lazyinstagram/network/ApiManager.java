@@ -1,4 +1,4 @@
-package kmitl.lab07.nakarin58070064.lazyinstagram.service;
+package kmitl.lab07.nakarin58070064.lazyinstagram.network;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;

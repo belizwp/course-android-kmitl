@@ -8,9 +8,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -19,33 +19,28 @@ import com.roughike.bottombar.OnTabSelectListener;
 
 import kmitl.lab07.nakarin58070064.lazyinstagram.adapter.PostAdapter;
 import kmitl.lab07.nakarin58070064.lazyinstagram.fragment.ProgressFragment;
-import kmitl.lab07.nakarin58070064.lazyinstagram.model.FollowRequest;
-import kmitl.lab07.nakarin58070064.lazyinstagram.model.FollowResponse;
-import kmitl.lab07.nakarin58070064.lazyinstagram.model.UserProfile;
-import kmitl.lab07.nakarin58070064.lazyinstagram.service.ApiManager;
+import kmitl.lab07.nakarin58070064.lazyinstagram.network.ApiManager;
+import kmitl.lab07.nakarin58070064.lazyinstagram.network.request.FollowRequest;
+import kmitl.lab07.nakarin58070064.lazyinstagram.network.response.FollowResponse;
+import kmitl.lab07.nakarin58070064.lazyinstagram.network.response.UserProfile;
+import kmitl.lab07.nakarin58070064.lazyinstagram.view.ProfileView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener,
-        OnTabSelectListener {
+public class MainActivity extends AppCompatActivity implements ProfileView.OnFollowClickListener,
+        OnTabSelectListener, AdapterView.OnItemSelectedListener {
 
     private UserProfile userProfile;
-    private PostAdapter adapter;
+    private ArrayAdapter<CharSequence> userAdapter;
+    private PostAdapter postAdapter;
+    private ProgressFragment progress;
 
     private Toolbar toolbar;
-    private RecyclerView list;
-
-    private TextView textUser;
-    private TextView textPost;
-    private TextView textFollower;
-    private TextView textFollwing;
-    private TextView textBio;
-    private ImageView imageProfile;
-    private Button btnFollow;
-    private BottomBar bottomBar;
-
-    private ProgressFragment progress;
+    private Spinner userSpinner;
+    private ProfileView profileView;
+    private BottomBar navBar;
+    private RecyclerView rvPost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,127 +48,128 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         initInstances();
-
-        progress.show(getSupportFragmentManager(), null);
-        loadUserProfile("android");
     }
 
     private void initInstances() {
-        adapter = new PostAdapter(this);
-
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        list = (RecyclerView) findViewById(R.id.list);
-        textUser = (TextView) findViewById(R.id.textUser);
-        textPost = (TextView) findViewById(R.id.textPost);
-        textFollower = (TextView) findViewById(R.id.textFollower);
-        textFollwing = (TextView) findViewById(R.id.textFollwing);
-        textBio = (TextView) findViewById(R.id.textBio);
-        imageProfile = (ImageView) findViewById(R.id.imageProfile);
-        btnFollow = (Button) findViewById(R.id.btnFollow);
-        bottomBar = (BottomBar) findViewById(R.id.navBar);
-
         setSupportActionBar(toolbar);
-        list.setLayoutManager(new GridLayoutManager(this, 3));
-        list.setAdapter(adapter);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        btnFollow.setOnClickListener(this);
-        bottomBar.setOnTabSelectListener(this);
+        userSpinner = (Spinner) findViewById(R.id.userSpinner);
+        userAdapter = ArrayAdapter.createFromResource(this, R.array.user,
+                R.layout.spinner_dropdown_item);
+        userSpinner.setAdapter(userAdapter);
+        userSpinner.setOnItemSelectedListener(this);
 
+        postAdapter = new PostAdapter(this);
         progress = new ProgressFragment();
         progress.setCancelable(false);
+
+        profileView = (ProfileView) findViewById(R.id.userProfile);
+        navBar = (BottomBar) findViewById(R.id.navBar);
+        rvPost = (RecyclerView) findViewById(R.id.rvPost);
+
+        profileView.setOnFollowClickListener(this);
+        navBar.setOnTabSelectListener(this);
+        rvPost.setAdapter(postAdapter);
     }
 
-    private void loadUserProfile(String username) {
-        Call<UserProfile> call = ApiManager.getInstance().getApi().getProfile(username);
-        call.enqueue(new Callback<UserProfile>() {
-            @Override
-            public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
-                progress.dismiss();
-                if (response.isSuccessful()) {
-                    userProfile = response.body();
-                    display(userProfile);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserProfile> call, Throwable t) {
-                progress.dismiss();
-            }
-        });
-    }
-
-    private void onFollow(String username, final boolean isFollow) {
-        FollowRequest request = new FollowRequest(username, isFollow);
-        Call<FollowResponse> call = ApiManager.getInstance().getApi().follow(request);
-        call.enqueue(new Callback<FollowResponse>() {
-            @Override
-            public void onResponse(Call<FollowResponse> call, Response<FollowResponse> response) {
-                progress.dismiss();
-                if (response.isSuccessful()) {
-                    if (response.body().getMessage().equals("OK")) {
-                        userProfile.setFollow(isFollow);
-                        setFollowButton(isFollow);
-
-                        if (isFollow) {
-                            Toast.makeText(MainActivity.this, "follow success!",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, "unfollow success!",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                        return;
-                    }
-                }
-                Toast.makeText(MainActivity.this, "action failed!", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(Call<FollowResponse> call, Throwable t) {
-                progress.dismiss();
-                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void display(UserProfile user) {
-        Glide.with(this).load(user.getUrlProfile()).into(imageProfile);
-
-        textUser.setText("@" + user.getUser());
-        textPost.setText("Post\n" + user.getPost());
-        textFollower.setText("Follower\n" + user.getFollower());
-        textFollwing.setText("Following\n" + user.getFollowing());
-        textBio.setText(user.getBio());
-        setFollowButton(user.isFollow());
-
-        adapter.setData(user.getPosts());
-        adapter.notifyDataSetChanged();
-    }
-
-    private void setFollowButton(boolean isFollow) {
-        btnFollow.setEnabled(true);
-        if (isFollow) {
-            btnFollow.setText(R.string.following);
-        } else {
-            btnFollow.setText(R.string.not_follow);
-        }
+    private void loadUserProfile(String user) {
+        progress.show(getSupportFragmentManager(), null);
+        Call<UserProfile> call = ApiManager.getInstance().getApi().getProfile(user);
+        call.enqueue(new MyCallback(MyCallback.ACTION_LOAD_PROFILE));
     }
 
     @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.btnFollow) {
-            progress.show(getSupportFragmentManager(), null);
-            onFollow(userProfile.getUser(), !userProfile.isFollow());
-        }
+    public void onFollowClick() {
+        progress.show(getSupportFragmentManager(), null);
+        FollowRequest body = new FollowRequest(userProfile.getUser(), !userProfile.isFollow());
+        Call<FollowResponse> call = ApiManager.getInstance().getApi().follow(body);
+        call.enqueue(new MyCallback(MyCallback.ACTION_FOLLOW));
+    }
+
+    private void display(UserProfile user) {
+        Glide.with(this).load(user.getUrlProfile()).into(profileView.getProfileImageView());
+
+        profileView.setUser(user.getUser());
+        profileView.setPost(user.getPost());
+        profileView.setFollower(user.getFollower());
+        profileView.setFollowing(user.getFollowing());
+        profileView.setBio(user.getBio());
+        profileView.setFollow(user.isFollow());
+
+        postAdapter.setData(user.getPosts());
+        postAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onTabSelected(@IdRes int tabId) {
         if (tabId == R.id.tab_grid) {
-            adapter.setItemLayout(PostAdapter.GRID_LAYOUT);
-            list.setLayoutManager(new GridLayoutManager(this, 3));
+            postAdapter.setItemLayout(PostAdapter.GRID_LAYOUT);
+            rvPost.setLayoutManager(new GridLayoutManager(this, 3));
         } else if (tabId == R.id.tab_list) {
-            adapter.setItemLayout(PostAdapter.LIST_LAYOUT);
-            list.setLayoutManager(new LinearLayoutManager(this));
+            postAdapter.setItemLayout(PostAdapter.LIST_LAYOUT);
+            rvPost.setLayoutManager(new LinearLayoutManager(this));
+        }
+    }
+
+    private void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String user = getResources().getStringArray(R.array.user)[position];
+        loadUserProfile(user);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    class MyCallback implements Callback {
+
+        static final int ACTION_LOAD_PROFILE = 1;
+        static final int ACTION_FOLLOW = 2;
+
+        int action;
+
+        public MyCallback(int action) {
+            this.action = action;
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) {
+            progress.dismiss();
+            if (response.isSuccessful()) {
+                switch (action) {
+                    case ACTION_LOAD_PROFILE:
+                        userProfile = (UserProfile) response.body();
+                        display(userProfile);
+                        return;
+                    case ACTION_FOLLOW:
+                        FollowResponse followResponse = (FollowResponse) response.body();
+                        if (followResponse.getMessage().equals("OK")) {
+                            userProfile.setFollow(!userProfile.isFollow());
+                            profileView.setFollow(userProfile.isFollow());
+                            if (userProfile.isFollow()) {
+                                showToast("follow success!");
+                            } else {
+                                showToast("unfollow success!");
+                            }
+                            return;
+                        }
+                        break;
+                }
+            }
+            showToast("action failed!");
+        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            progress.dismiss();
+            showToast(t.getMessage());
         }
     }
 }

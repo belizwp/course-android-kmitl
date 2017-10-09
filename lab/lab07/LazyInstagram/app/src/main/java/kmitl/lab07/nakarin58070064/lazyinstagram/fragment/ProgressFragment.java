@@ -25,5 +25,4 @@ public class ProgressFragment extends DialogFragment {
         return rootView;
     }
 
-
 }

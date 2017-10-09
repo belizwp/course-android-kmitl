@@ -1,4 +1,4 @@
-package kmitl.lab07.nakarin58070064.lazyinstagram.model;
+package kmitl.lab07.nakarin58070064.lazyinstagram.network.response;
 
 public class PostModel {
 

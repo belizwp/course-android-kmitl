@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this, this);
         preference = new CommonSharePreference(this);
-        userInfoList = (UserInfoList) preference.read(UserInfoListActivity.EXTTRA_LIST, UserInfoList.class);
 
     }
 
@@ -61,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUserInfo(String name, String age) {
+        userInfoList = (UserInfoList) preference.read(UserInfoListActivity.EXTTRA_LIST, UserInfoList.class);
+
         UserInfo userInfo = new UserInfo();
         userInfo.setName(name);
         userInfo.setAge(age);

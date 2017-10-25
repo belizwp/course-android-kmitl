@@ -16,6 +16,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.allOf;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
@@ -31,7 +32,7 @@ public class MainActivityTest {
     public void case01() {
         onView(withId(R.id.editTExtName)).perform(clearText());
         onView(withId(R.id.editTextAge)).perform(clearText());
-        onView(withText("ADDED")).perform(click());
+        onView(allOf(withId(R.id.buttonAdded), withText("ADDED"))).perform(click());
         onView(withText("Please Enter user info")).check(matches(isDisplayed()));
     }
 
@@ -43,7 +44,7 @@ public class MainActivityTest {
     public void case02() {
         onView(withId(R.id.editTExtName)).perform(clearText());
         onView(withId(R.id.editTextAge)).perform(replaceText("20"), closeSoftKeyboard());
-        onView(withText("ADDED")).perform(click());
+        onView(allOf(withId(R.id.buttonAdded), withText("ADDED"))).perform(click());
         onView(withText("Please Enter user info")).check(matches(isDisplayed()));
     }
 
@@ -53,7 +54,7 @@ public class MainActivityTest {
      */
     @Test
     public void case03() {
-        onView(withText("GO TO LIST")).perform(click());
+        onView(allOf(withId(R.id.buttonGotoList), withText("GO TO LIST"))).perform(click());
         onView(withText("Not Found")).check(matches(isDisplayed()));
     }
 
@@ -65,7 +66,7 @@ public class MainActivityTest {
     public void case04() {
         onView(withId(R.id.editTExtName)).perform(replaceText("Ying"), closeSoftKeyboard());
         onView(withId(R.id.editTextAge)).perform(clearText());
-        onView(withText("ADDED")).perform(click());
+        onView(allOf(withId(R.id.buttonAdded), withText("ADDED"))).perform(click());
         onView(withText("Please Enter user info")).check(matches(isDisplayed()));
     }
 
@@ -77,8 +78,8 @@ public class MainActivityTest {
     public void case05() {
         onView(withId(R.id.editTExtName)).perform(replaceText("Ying"));
         onView(withId(R.id.editTextAge)).perform(replaceText("20"), closeSoftKeyboard());
-        onView(withText("ADDED")).perform(click());
-        onView(withText("GO TO LIST")).perform(click());
+        onView(allOf(withId(R.id.buttonAdded), withText("ADDED"))).perform(click());
+        onView(allOf(withId(R.id.buttonGotoList), withText("GO TO LIST"))).perform(click());
         onView(withRecyclerView(R.id.list).atPositionOnView(0, R.id.textName))
                 .check(matches(withText("Ying")));
         onView(withRecyclerView(R.id.list).atPositionOnView(0, R.id.textAge))
@@ -93,8 +94,8 @@ public class MainActivityTest {
     public void case06() {
         onView(withId(R.id.editTExtName)).perform(replaceText("Ladarat"));
         onView(withId(R.id.editTextAge)).perform(replaceText("20"), closeSoftKeyboard());
-        onView(withText("ADDED")).perform(click());
-        onView(withText("GO TO LIST")).perform(click());
+        onView(allOf(withId(R.id.buttonAdded), withText("ADDED"))).perform(click());
+        onView(allOf(withId(R.id.buttonGotoList), withText("GO TO LIST"))).perform(click());
         onView(withRecyclerView(R.id.list).atPositionOnView(1, R.id.textName))
                 .check(matches(withText("Ladarat")));
         onView(withRecyclerView(R.id.list).atPositionOnView(1, R.id.textAge))
@@ -109,8 +110,8 @@ public class MainActivityTest {
     public void case07() {
         onView(withId(R.id.editTExtName)).perform(replaceText("Somkait"));
         onView(withId(R.id.editTextAge)).perform(replaceText("80"), closeSoftKeyboard());
-        onView(withText("ADDED")).perform(click());
-        onView(withText("GO TO LIST")).perform(click());
+        onView(allOf(withId(R.id.buttonAdded), withText("ADDED"))).perform(click());
+        onView(allOf(withId(R.id.buttonGotoList), withText("GO TO LIST"))).perform(click());
         onView(withRecyclerView(R.id.list).atPositionOnView(2, R.id.textName))
                 .check(matches(withText("Somkait")));
         onView(withRecyclerView(R.id.list).atPositionOnView(2, R.id.textAge))
@@ -125,8 +126,8 @@ public class MainActivityTest {
     public void case08() {
         onView(withId(R.id.editTExtName)).perform(replaceText("Prayoch"));
         onView(withId(R.id.editTextAge)).perform(replaceText("60"), closeSoftKeyboard());
-        onView(withText("ADDED")).perform(click());
-        onView(withText("GO TO LIST")).perform(click());
+        onView(allOf(withId(R.id.buttonAdded), withText("ADDED"))).perform(click());
+        onView(allOf(withId(R.id.buttonGotoList), withText("GO TO LIST"))).perform(click());
         onView(withRecyclerView(R.id.list).atPositionOnView(3, R.id.textName))
                 .check(matches(withText("Prayoch")));
         onView(withRecyclerView(R.id.list).atPositionOnView(3, R.id.textAge))
@@ -141,8 +142,8 @@ public class MainActivityTest {
     public void case09() {
         onView(withId(R.id.editTExtName)).perform(replaceText("Prayoch"));
         onView(withId(R.id.editTextAge)).perform(replaceText("50"), closeSoftKeyboard());
-        onView(withText("ADDED")).perform(click());
-        onView(withText("GO TO LIST")).perform(click());
+        onView(allOf(withId(R.id.buttonAdded), withText("ADDED"))).perform(click());
+        onView(allOf(withId(R.id.buttonGotoList), withText("GO TO LIST"))).perform(click());
         onView(withRecyclerView(R.id.list).atPositionOnView(4, R.id.textName))
                 .check(matches(withText("Prayoch")));
         onView(withRecyclerView(R.id.list).atPositionOnView(4, R.id.textAge))

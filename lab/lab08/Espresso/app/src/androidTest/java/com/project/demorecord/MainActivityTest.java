@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
@@ -28,6 +29,8 @@ public class MainActivityTest {
      */
     @Test
     public void case01() {
+        onView(withId(R.id.editTExtName)).perform(clearText());
+        onView(withId(R.id.editTextAge)).perform(clearText());
         onView(withText("ADDED")).perform(click());
         onView(withText("Please Enter user info")).check(matches(isDisplayed()));
     }
@@ -38,6 +41,7 @@ public class MainActivityTest {
      */
     @Test
     public void case02() {
+        onView(withId(R.id.editTExtName)).perform(clearText());
         onView(withId(R.id.editTextAge)).perform(replaceText("20"), closeSoftKeyboard());
         onView(withText("ADDED")).perform(click());
         onView(withText("Please Enter user info")).check(matches(isDisplayed()));
@@ -60,6 +64,7 @@ public class MainActivityTest {
     @Test
     public void case04() {
         onView(withId(R.id.editTExtName)).perform(replaceText("Ying"), closeSoftKeyboard());
+        onView(withId(R.id.editTextAge)).perform(clearText());
         onView(withText("ADDED")).perform(click());
         onView(withText("Please Enter user info")).check(matches(isDisplayed()));
     }

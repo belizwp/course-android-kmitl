@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">moneyflow</string>
+    <string name="type_income">income</string>
+    <string name="type_outcome">outcome</string>
+    <string name="title_edit">แก้ไข</string>
+    <string name="title_add">เพิ่ม</string>
+    <string name="empty_list">มาเพิ่ม \'หนี้\' กัน</string>
+</resources>
